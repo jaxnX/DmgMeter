@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Auto_Reset.png</file>
+        <file>Help.png</file>
+        <file>Opacity.png</file>
+        <file>Reset.png</file>
+    </qresource>
+</RCC>
