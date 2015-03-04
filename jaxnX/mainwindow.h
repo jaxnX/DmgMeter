@@ -4,8 +4,6 @@
 #define MAINWINDOW_WEBSITE_URL "http://www.gw2dmg-meter.de/howto.html"
 
 #include <QMainWindow>
-#include <QUrl>
-#include <QDesktopServices>
 #include "screenrecorderthread.h"
 
 namespace Ui {
@@ -30,23 +28,6 @@ namespace GW2
         void EnableOpacity(bool isOpaque);
         void LinkToWebsite();
     };
-
-    inline void MainWindow::EnableOpacity(bool isOpaque)
-    {
-        if (isOpaque)
-        {
-            this->setWindowOpacity(0.4);
-        }
-        else
-        {
-            this->setWindowOpacity(1.0);
-        }
-    }
-
-    inline void MainWindow::LinkToWebsite()
-    {
-        QDesktopServices::openUrl(QUrl(MAINWINDOW_WEBSITE_URL));
-    }
 }
 
 #endif // MAINWINDOW_H

@@ -11,8 +11,6 @@
 #define IMAGEATTRIBUTES_MAX_WIDTH 611
 #define IMAGEATTRIBUTES_MAX_HEIGHT 556
 
-#include <QObject>
-
 namespace GW2
 {
     class ImageAttributes
@@ -62,77 +60,6 @@ namespace GW2
         int GetLineYOffset() const;
         int GetLastLineY() const;
     };
-
-    inline ImageAttributes::ImageAttributes() :
-        m_InterfaceSize(NormalInterfaceSize),
-        m_ChatTextSize(MediumTextSize),
-        m_InterfaceChatTextSizeIndex(m_InterfaceSize * ChatTextSizeCount + m_ChatTextSize),
-        m_LastLineY(-1)
-    {
-
-    }
-
-    inline ImageAttributes::~ImageAttributes()
-    {
-
-    }
-
-    inline void ImageAttributes::SetInterfaceSize(InterfaceSize interfaceSize)
-    {
-        m_InterfaceSize = interfaceSize;
-        m_InterfaceChatTextSizeIndex = m_InterfaceSize * ChatTextSizeCount + m_ChatTextSize;
-    }
-
-    inline void ImageAttributes::SetChatTextSize(ImageAttributes::ChatTextSize chatTextSize)
-    {
-        m_ChatTextSize = chatTextSize;
-        m_InterfaceChatTextSizeIndex = m_InterfaceSize * ChatTextSizeCount + m_ChatTextSize;
-    }
-
-    inline void ImageAttributes::SetLastLineY(int lastLineY)
-    {
-        m_LastLineY = lastLineY;
-    }
-
-    inline ImageAttributes::InterfaceSize ImageAttributes::GetInterfaceSize() const
-    {
-        return m_InterfaceSize;
-    }
-
-    inline ImageAttributes::ChatTextSize ImageAttributes::GetChatTextSize() const
-    {
-        return m_ChatTextSize;
-    }
-
-    inline int ImageAttributes::GetLastLineControlYOffset() const
-    {
-        return s_LastLineControlYOffsets[m_InterfaceChatTextSizeIndex];
-    }
-
-    inline int ImageAttributes::GetLineDistance() const
-    {
-        return s_LineDistances[m_InterfaceChatTextSizeIndex];
-    }
-
-    inline int ImageAttributes::GetCharacterWidth() const
-    {
-        return s_CharacterWidths[m_InterfaceChatTextSizeIndex];
-    }
-
-    inline int ImageAttributes::GetCharacterHeight() const
-    {
-        return s_CharacterHeights[m_InterfaceChatTextSizeIndex];
-    }
-
-    inline int ImageAttributes::GetLineYOffset() const
-    {
-        return GetCharacterHeight() / 2 + 1;
-    }
-
-    inline int ImageAttributes::GetLastLineY() const
-    {
-        return m_LastLineY;
-    }
 }
 
 #endif // IMAGEATTRIBUTES_H

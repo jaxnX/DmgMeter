@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QUrl>
+#include <QDesktopServices>
 
 using namespace GW2;
 
@@ -23,4 +25,21 @@ MainWindow::~MainWindow()
 //    m_RecorderThread.wait();
 
     delete ui;
+}
+
+void MainWindow::EnableOpacity(bool isOpaque)
+{
+    if (isOpaque)
+    {
+        this->setWindowOpacity(0.4);
+    }
+    else
+    {
+        this->setWindowOpacity(1.0);
+    }
+}
+
+void MainWindow::LinkToWebsite()
+{
+    QDesktopServices::openUrl(QUrl(MAINWINDOW_WEBSITE_URL));
 }
