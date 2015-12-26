@@ -118,7 +118,7 @@ void DmgMeter::ComputeDps()
 {
     const double elapsedSecsSinceCombat = (m_ElapsedTimeSinceCombatInMsec + m_TimeSinceCombat.elapsed()) / 1000.0f;
     const double elapsedSecsSinceEvaluation = m_TimeSinceEvaluation.elapsed() / 1000.0f;
-    m_Dps = m_Dmg / elapsedSecsSinceCombat;
+    m_Dps = elapsedSecsSinceCombat == 0.0 ? m_Dmg : m_Dmg / elapsedSecsSinceCombat; // Prevent division by zero
     emit RequestDpsUpdate(m_Dps);
     if (elapsedSecsSinceEvaluation >= m_SecsInCombat)
     {

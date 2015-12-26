@@ -10,6 +10,9 @@ Configurator::Configurator(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    // Set version
+    ui->labelVersion->setText(Settings::s_Version);
+
     Settings::ReadSettings(ui->comboBoxScreenshots);
     Settings::ReadSettings(ui->comboBoxUpdates);
     Settings::ReadSettings(ui->comboBoxSecondsInCombat);

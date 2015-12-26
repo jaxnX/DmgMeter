@@ -17,11 +17,11 @@ namespace GW2
         template <typename WidgetType>
         inline static void WriteSettings(WidgetType* widget);
 
-    private:
-        Settings();
-
         static const QString s_Product;
         static const QString s_Version;
+
+    private:
+        Settings();
     };
 
     template <>
