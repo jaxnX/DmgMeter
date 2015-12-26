@@ -236,6 +236,97 @@ const unsigned char CharacterPattern::s_ControlPatternGrids[ImageAttributes::Int
     }
 };
 
+CharacterPattern::CharacterPattern() :
+    m_CurrentWidth(-1),
+    m_CurrentHeight(-1)
+{
+}
+
+CharacterPattern::~CharacterPattern()
+{
+
+}
+
+QString CharacterPattern::ConvertCharGridToCharacter(const CharacterGrid& charGrid, const ImageAttributes& imageAttributes, int offsetAdd)
+{
+    // Flatten array for function
+    const unsigned char* patternGrids = &s_PatternGrids[imageAttributes.GetInterfaceSize()][imageAttributes.GetChatTextSize()][0][0][0];
+
+    // Find best matching patterns with offset
+    ResetBestMatchingPatterns();
+    m_CurrentWidth = imageAttributes.GetCharacterWidth();
+    m_CurrentHeight = imageAttributes.GetCharacterHeight();
+    m_CurrentPositiveWeight = CHARACTERPATTERN_POSITIVE_WEIGHT;
+    m_CurrentNegativeWeight = CHARACTERPATTERN_NEGATIVE_WEIGHT;
+    for (int xOffset = -CHARACTERPATTERN_X_OFFSET; xOffset <= CHARACTERPATTERN_X_OFFSET; ++xOffset)
+    {
+        FindPatternMatches(patternGrids, charGrid, CHARACTERPATTERN_COUNT, xOffset + offsetAdd);
+        FindBestMatchingPattern(CHARACTERPATTERN_COUNT, xOffset);
+    }
+
+    const int bestIndex = FindBestOverallMatchingPattern(CHARACTERPATTERN_X_OFFSET * 2 + 1);
+    if (bestIndex >= 0)
+    {
+        // Found best matching pattern, return resulting character
+        return s_Pattern[bestIndex];
+    }
+
+    return "";
+}
+
+CharacterPattern::ControlType CharacterPattern::ConvertCharGridToImageAttributes(ImageAttributes& imageAttributes, const CharacterGrid& charGrid)
+{
+    ResetBestMatchingPatterns();
+    m_CurrentWidth = CHARACTERPATTERN_CONTROL_MAX_WIDTH;
+    m_CurrentHeight = CHARACTERPATTERN_CONTROL_MAX_HEIGHT;
+    m_CurrentPositiveWeight = CHARACTERPATTERN_POSITIVE_WEIGHT;
+    m_CurrentNegativeWeight = CHARACTERPATTERN_NEGATIVE_WEIGHT * 10;
+    const int interfaceSizeCount = ImageAttributes::InterfaceSizeCount;
+    for (int i = 0; i < interfaceSizeCount; ++i)
+    {
+        // Flatten array for function
+        const unsigned char* patternGrids = &s_ControlPatternGrids[i][0][0][0];
+
+        FindPatternMatches(patternGrids, charGrid, CHARACTERPATTERN_CONTROL_COUNT);
+        FindBestMatchingPattern(CHARACTERPATTERN_CONTROL_COUNT, -CHARACTERPATTERN_X_OFFSET + i);
+    }
+
+    int interfaceIndex;
+    const int bestIndex = FindBestOverallMatchingPattern(ImageAttributes::InterfaceSizeCount, &interfaceIndex);
+    if (bestIndex >= 0)
+    {
+        // Found interface size, set it as new interface size;
+        imageAttributes.SetInterfaceSize(static_cast<ImageAttributes::InterfaceSize>(interfaceIndex));
+    }
+
+    return static_cast<ControlType>(bestIndex + CHARACTERPATTERN_CONTROL_INDEX_OFFSET);
+}
+
+CharacterPattern::ControlType CharacterPattern::ConvertCharGridToScrollBarControlType(const CharacterGrid& charGrid, const ImageAttributes& imageAttributes)
+{
+    // Flatten array for function
+    const unsigned char* patternGrids = &s_ControlPatternGrids[imageAttributes.GetInterfaceSize()][ScrollBarControl - CHARACTERPATTERN_CONTROL_INDEX_OFFSET][0][0];
+
+    ResetBestMatchingPatterns();
+    m_CurrentWidth = CHARACTERPATTERN_CONTROL_MAX_WIDTH;
+    m_CurrentHeight = CHARACTERPATTERN_CONTROL_MAX_HEIGHT;
+    m_CurrentPositiveWeight = CHARACTERPATTERN_POSITIVE_WEIGHT;
+    m_CurrentNegativeWeight = CHARACTERPATTERN_NEGATIVE_WEIGHT;
+    for (int xOffset = -CHARACTERPATTERN_X_OFFSET; xOffset <= CHARACTERPATTERN_X_OFFSET; ++xOffset)
+    {
+        FindPatternMatches(patternGrids, charGrid, CHARACTERPATTERN_SCROLLBAR_CONTROL_COUNT, xOffset);
+        FindBestMatchingPattern(CHARACTERPATTERN_COUNT, xOffset);
+    }
+
+    const int bestIndex = FindBestOverallMatchingPattern(CHARACTERPATTERN_X_OFFSET * 2 + 1);
+    if (bestIndex >= 0)
+    {
+        // Found pattern, return scrollbar control
+        return ScrollBarControl;
+    }
+
+    return InvalidControl;
+}
 
 void CharacterPattern::FindPatternMatches(const unsigned char* patternGrids, const CharacterGrid& charGrid, unsigned int patternCount, int xOffset)
 {
@@ -357,96 +448,4 @@ void CharacterPattern::ResetBestMatchingPatterns()
         m_BestMatchingPatternCounts[i] = 0;
         m_BestMatchingPatterns[i] = 0;
     }
-}
-
-CharacterPattern::CharacterPattern() :
-    m_CurrentWidth(-1),
-    m_CurrentHeight(-1)
-{
-}
-
-CharacterPattern::~CharacterPattern()
-{
-
-}
-
-QString CharacterPattern::ConvertCharGridToCharacter(const CharacterGrid& charGrid, const ImageAttributes& imageAttributes, int offsetAdd)
-{
-    // Flatten array for function
-    const unsigned char* patternGrids = &s_PatternGrids[imageAttributes.GetInterfaceSize()][imageAttributes.GetChatTextSize()][0][0][0];
-
-    // Find best matching patterns with offset
-    ResetBestMatchingPatterns();
-    m_CurrentWidth = imageAttributes.GetCharacterWidth();
-    m_CurrentHeight = imageAttributes.GetCharacterHeight();
-    m_CurrentPositiveWeight = CHARACTERPATTERN_POSITIVE_WEIGHT;
-    m_CurrentNegativeWeight = CHARACTERPATTERN_NEGATIVE_WEIGHT;
-    for (int xOffset = -CHARACTERPATTERN_X_OFFSET; xOffset <= CHARACTERPATTERN_X_OFFSET; ++xOffset)
-    {
-        FindPatternMatches(patternGrids, charGrid, CHARACTERPATTERN_COUNT, xOffset + offsetAdd);
-        FindBestMatchingPattern(CHARACTERPATTERN_COUNT, xOffset);
-    }
-
-    const int bestIndex = FindBestOverallMatchingPattern(CHARACTERPATTERN_X_OFFSET * 2 + 1);
-    if (bestIndex >= 0)
-    {
-        // Found best matching pattern, return resulting character
-        return s_Pattern[bestIndex];
-    }
-
-    return "";
-}
-
-CharacterPattern::ControlType CharacterPattern::ConvertCharGridToImageAttributes(ImageAttributes& imageAttributes, const CharacterGrid& charGrid)
-{
-    ResetBestMatchingPatterns();
-    m_CurrentWidth = CHARACTERPATTERN_CONTROL_MAX_WIDTH;
-    m_CurrentHeight = CHARACTERPATTERN_CONTROL_MAX_HEIGHT;
-    m_CurrentPositiveWeight = CHARACTERPATTERN_POSITIVE_WEIGHT;
-    m_CurrentNegativeWeight = CHARACTERPATTERN_NEGATIVE_WEIGHT * 10;
-    const int interfaceSizeCount = ImageAttributes::InterfaceSizeCount;
-    for (int i = 0; i < interfaceSizeCount; ++i)
-    {
-        // Flatten array for function
-        const unsigned char* patternGrids = &s_ControlPatternGrids[i][0][0][0];
-
-        FindPatternMatches(patternGrids, charGrid, CHARACTERPATTERN_CONTROL_COUNT);
-        FindBestMatchingPattern(CHARACTERPATTERN_CONTROL_COUNT, -CHARACTERPATTERN_X_OFFSET + i);
-    }
-
-    int interfaceIndex;
-    const int bestIndex = FindBestOverallMatchingPattern(ImageAttributes::InterfaceSizeCount, &interfaceIndex);
-    if (bestIndex >= 0)
-    {
-        // Found interface size, set it as new interface size;
-        imageAttributes.SetInterfaceSize(static_cast<ImageAttributes::InterfaceSize>(interfaceIndex));
-    }
-
-    return static_cast<ControlType>(bestIndex + CHARACTERPATTERN_CONTROL_INDEX_OFFSET);
-}
-
-CharacterPattern::ControlType CharacterPattern::ConvertCharGridToScrollBarControlType(const CharacterGrid& charGrid, const ImageAttributes& imageAttributes)
-{
-    // Flatten array for function
-    const unsigned char* patternGrids = &s_ControlPatternGrids[imageAttributes.GetInterfaceSize()][ScrollBarControl - CHARACTERPATTERN_CONTROL_INDEX_OFFSET][0][0];
-
-    ResetBestMatchingPatterns();
-    m_CurrentWidth = CHARACTERPATTERN_CONTROL_MAX_WIDTH;
-    m_CurrentHeight = CHARACTERPATTERN_CONTROL_MAX_HEIGHT;
-    m_CurrentPositiveWeight = CHARACTERPATTERN_POSITIVE_WEIGHT;
-    m_CurrentNegativeWeight = CHARACTERPATTERN_NEGATIVE_WEIGHT;
-    for (int xOffset = -CHARACTERPATTERN_X_OFFSET; xOffset <= CHARACTERPATTERN_X_OFFSET; ++xOffset)
-    {
-        FindPatternMatches(patternGrids, charGrid, CHARACTERPATTERN_SCROLLBAR_CONTROL_COUNT, xOffset);
-        FindBestMatchingPattern(CHARACTERPATTERN_COUNT, xOffset);
-    }
-
-    const int bestIndex = FindBestOverallMatchingPattern(CHARACTERPATTERN_X_OFFSET * 2 + 1);
-    if (bestIndex >= 0)
-    {
-        // Found pattern, return scrollbar control
-        return ScrollBarControl;
-    }
-
-    return InvalidControl;
 }

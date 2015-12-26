@@ -1,10 +1,8 @@
 #ifndef SCREENRECORDER_H
 #define SCREENRECORDER_H
 
-#define SCREENRECORDER_TIMEOUT 200
-
 #include <QScreen>
-#include "imageattributes.h"
+#include "imagereader.h"
 #include "dmgmeter.h"
 
 namespace GW2
@@ -13,10 +11,26 @@ namespace GW2
     {
         Q_OBJECT
 
+    signals:
+        void RequestInfoUpdate(const QString&);
+
+    public slots:
+        void StartRecording();
+        void SetScreenshotsPerSecond(const QString& screenshotsPerSecond);
+
+    public:
+        ScreenRecorder();
+        ~ScreenRecorder();
+
+        inline DmgMeter& GetDmgMeter();
+
+    private slots:
+        void Capture();
+
     private:
-        QList<QScreen*> m_Screens;
         QTimer m_Timer;
         DmgMeter m_DmgMeter;
+        ImageReader m_ImageReader;
         ImageAttributes m_ImageAttributes;
         WId m_DesktopWId;
         int m_CurrentScreenIndex;
@@ -25,22 +39,12 @@ namespace GW2
         bool m_IsValid;
 
         static const QString s_Infos[CharacterPattern::ControlTypeCount];
-
-        friend class ScreenRecorderThread;
-
-    public:
-        ScreenRecorder(WId desktopId);
-        ~ScreenRecorder();
-
-        void StartRecording();
-        void StopRecording();
-
-    signals:
-        void RequestInfoUpdate(const QString&);
-
-    private slots:
-        void Capture();
     };
+
+    inline DmgMeter& ScreenRecorder::GetDmgMeter()
+    {
+        return m_DmgMeter;
+    }
 }
 
 #endif // SCREENRECORDER_H

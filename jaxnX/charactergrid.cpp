@@ -9,6 +9,95 @@
 
 using namespace GW2;
 
+CharacterGrid::CharacterGrid() :
+    m_Width(0),
+    m_Height(0),
+    m_LowerRgbLimit(CHARACTERGRID_LOWER_RGB_LIMIT),
+    m_FuncPtr(NULL)
+{
+
+}
+
+CharacterGrid::~CharacterGrid()
+{
+
+}
+
+void CharacterGrid::SetLowerRgbLimit(int lowerRgbLimit)
+{
+    m_LowerRgbLimit = lowerRgbLimit;
+}
+
+void CharacterGrid::FindCharacter(const QImage& image, int startX, int startY, const ImageAttributes& imageAttributes)
+{
+    m_FuncPtr = &CharacterGrid::IsPartOfCharacter;
+    FindSymbol(image, startX, startY, imageAttributes);
+}
+
+void CharacterGrid::FindNumber(const QImage& image, int startX, int startY, const ImageAttributes& imageAttributes)
+{
+    m_FuncPtr = &CharacterGrid::IsPartOfNumber;
+    FindSymbol(image, startX, startY, imageAttributes);
+}
+
+bool CharacterGrid::IsPartOfCharacter(QRgb rgb)
+{
+    int red = qRed(rgb);
+    int green = qGreen(rgb);
+    int blue = qBlue(rgb);
+    if (red < m_LowerRgbLimit && green < m_LowerRgbLimit && blue < m_LowerRgbLimit)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool CharacterGrid::IsPartOfNumber(QRgb rgb)
+{
+    int red = qRed(rgb);
+    int green = qGreen(rgb);
+    int blue = qBlue(rgb);
+    if (red < m_LowerRgbLimit && green < m_LowerRgbLimit && blue < m_LowerRgbLimit)
+    {
+        return false;
+    }
+
+    if (red > m_LowerRgbLimit && green > m_LowerRgbLimit && blue > m_LowerRgbLimit)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool CharacterGrid::IsDeviationTooLarge(const QImage& image, QRgb rgb, int x, int y)
+{
+    QRgb newRgb = image.pixel(x, y);
+    int red = qRed(newRgb);
+    int green = qGreen(newRgb);
+    int blue = qBlue(newRgb);
+    int redDeviation = qAbs(red - qRed(rgb));
+    int greenDeviation = qAbs(green - qGreen(rgb));
+    int blueDeviation = qAbs(blue - qBlue(rgb));
+    if (redDeviation > CHARACTERGRID_MAX_DEVIATION)
+    {
+        return true;
+    }
+
+    if (greenDeviation > CHARACTERGRID_MAX_DEVIATION)
+    {
+        return true;
+    }
+
+    if (blueDeviation > CHARACTERGRID_MAX_DEVIATION)
+    {
+        return true;
+    }
+
+    return false;
+}
+
 void CharacterGrid::AddPos(const QImage& image, int x, int y, int index)
 {
     if (!(m_Data[index] & Closed) && IsValidPartOfSymbol(image, x, y))
@@ -228,115 +317,6 @@ bool CharacterGrid::IsValidPartOfSymbol(const QImage& image, int x, int y)
         m_BlueSum += blue;
         ++m_RgbCount;
 
-        return true;
-    }
-
-    return false;
-}
-
-CharacterGrid::CharacterGrid() :
-    m_Width(0),
-    m_Height(0),
-    m_LowerRgbLimit(CHARACTERGRID_LOWER_RGB_LIMIT),
-    m_FuncPtr(NULL)
-{
-
-}
-
-CharacterGrid::~CharacterGrid()
-{
-
-}
-
-void CharacterGrid::SetLowerRgbLimit(int lowerRgbLimit)
-{
-    m_LowerRgbLimit = lowerRgbLimit;
-}
-
-void CharacterGrid::FindCharacter(const QImage& image, int startX, int startY, const ImageAttributes& imageAttributes)
-{
-    m_FuncPtr = &CharacterGrid::IsPartOfCharacter;
-    FindSymbol(image, startX, startY, imageAttributes);
-}
-
-void CharacterGrid::FindNumber(const QImage& image, int startX, int startY, const ImageAttributes& imageAttributes)
-{
-    m_FuncPtr = &CharacterGrid::IsPartOfNumber;
-    FindSymbol(image, startX, startY, imageAttributes);
-}
-
-int CharacterGrid::GetUsedWidth() const
-{
-    return m_UsedWidth;
-}
-
-int CharacterGrid::GetUsedHeight() const
-{
-    return m_UsedHeight;
-}
-
-int CharacterGrid::GetXOffset() const
-{
-    return m_XOffset;
-}
-
-int CharacterGrid::GetYOffset() const
-{
-    return m_YOffset;
-}
-
-bool CharacterGrid::IsPartOfCharacter(QRgb rgb)
-{
-    int red = qRed(rgb);
-    int green = qGreen(rgb);
-    int blue = qBlue(rgb);
-    if (red < m_LowerRgbLimit && green < m_LowerRgbLimit && blue < m_LowerRgbLimit)
-    {
-        return false;
-    }
-
-    return true;
-}
-
-bool CharacterGrid::IsPartOfNumber(QRgb rgb)
-{
-    int red = qRed(rgb);
-    int green = qGreen(rgb);
-    int blue = qBlue(rgb);
-    if (red < m_LowerRgbLimit && green < m_LowerRgbLimit && blue < m_LowerRgbLimit)
-    {
-        return false;
-    }
-
-    if (red > m_LowerRgbLimit && green > m_LowerRgbLimit && blue > m_LowerRgbLimit)
-    {
-        return false;
-    }
-
-    return true;
-}
-
-bool CharacterGrid::IsDeviationTooLarge(const QImage& image, QRgb rgb, int x, int y)
-{
-    QRgb newRgb = image.pixel(x, y);
-    int red = qRed(newRgb);
-    int green = qGreen(newRgb);
-    int blue = qBlue(newRgb);
-    int redDeviation = qAbs(red - qRed(rgb));
-    int greenDeviation = qAbs(green - qGreen(rgb));
-    int blueDeviation = qAbs(blue - qBlue(rgb));
-    if (redDeviation > CHARACTERGRID_MAX_DEVIATION)
-    {
-        return true;
-    }
-
-    if (greenDeviation > CHARACTERGRID_MAX_DEVIATION)
-    {
-        return true;
-    }
-
-    if (blueDeviation > CHARACTERGRID_MAX_DEVIATION)
-    {
         return true;
     }
 

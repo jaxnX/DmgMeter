@@ -4,7 +4,9 @@
 
 int main(int argc, char *argv[])
 {
-    qDebug() << "main:" << "Thread Id:" << QThread::currentThreadId();
+#ifdef QT_DEBUG
+    qDebug() << "main:" << "thread id" << QThread::currentThreadId();
+#endif // QT_DEBUG
 
     QApplication a(argc, argv);
     GW2::MainWindow w;

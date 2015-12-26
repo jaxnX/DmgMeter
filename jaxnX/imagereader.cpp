@@ -14,12 +14,12 @@ ImageReader::~ImageReader()
 
 }
 
-QString ImageReader::Read(const QImage& image, const ImageAttributes& imageAttributes)
+QString ImageReader::Read(const QImage& image, const ImageAttributes& imageAttributes, int lineCount)
 {
     QString result;
-    for (int i = 0; i < IMAGEATTRIBUTES_MAX_CONSIDERED_LINE_COUNT; ++i)
+    for (int i = 0; i < lineCount; ++i)
     {
-        QString line = ReadLineFromBottom(image, imageAttributes, i);
+        QString line = ReadLineFromBottom(image, imageAttributes, lineCount, i);
         if (line != "")
         {
             result += line;
@@ -30,7 +30,7 @@ QString ImageReader::Read(const QImage& image, const ImageAttributes& imageAttri
     return result;
 }
 
-QString ImageReader::ReadLineFromBottom(const QImage& image, const ImageAttributes& imageAttributes, int lineIndex)
+QString ImageReader::ReadLineFromBottom(const QImage& image, const ImageAttributes& imageAttributes, int lineCount, int lineIndex)
 {
 #ifdef CHARACTERGRID_DEBUG
     if (m_CharacterGrid.GetImage().size() != image.size() || lineIndex == 0)
@@ -46,7 +46,7 @@ QString ImageReader::ReadLineFromBottom(const QImage& image, const ImageAttribut
         return "";
     }
 
-    Q_ASSERT(lineIndex >= 0 && lineIndex < IMAGEATTRIBUTES_MAX_CONSIDERED_LINE_COUNT);
+    Q_ASSERT(lineIndex >= 0 && lineIndex < lineCount);
 
     QString numbers;
     QRgb rgb = QColor(Qt::black).rgb();
@@ -179,9 +179,4 @@ bool ImageReader::IsLogScrolledDown(const QImage& image, const ImageAttributes& 
 #endif // CHARACTERGRID_DEBUG
 
     return true;
-}
-
-const CharacterGrid& ImageReader::GetCharacterGrid() const
-{
-    return m_CharacterGrid;
 }

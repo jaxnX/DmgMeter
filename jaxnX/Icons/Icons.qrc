@@ -2,7 +2,8 @@
     <qresource prefix="/">
         <file>Auto_Reset.png</file>
         <file>Help.png</file>
-        <file>Opacity.png</file>
         <file>Reset.png</file>
+        <file>Config.png</file>
+        <file>Transparency.png</file>
     </qresource>
 </RCC>

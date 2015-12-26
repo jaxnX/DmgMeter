@@ -20,25 +20,6 @@ namespace GW2
 {
     class CharacterPattern
     {
-    private:
-        int m_PatternMatches[CHARACTERPATTERN_COUNT];
-        int m_BestMatchingIndices[ImageAttributes::InterfaceSizeCount];
-        int m_BestMatchingPatternCounts[ImageAttributes::InterfaceSizeCount];
-        int m_BestMatchingPatterns[ImageAttributes::InterfaceSizeCount];
-        int m_CurrentWidth;
-        int m_CurrentHeight;
-        int m_CurrentPositiveWeight;
-        int m_CurrentNegativeWeight;
-
-        static const QString s_Pattern;
-        static const unsigned char s_PatternGrids[ImageAttributes::InterfaceSizeCount][ImageAttributes::ChatTextSizeCount][CHARACTERPATTERN_COUNT][CHARACTERPATTERN_MAX_HEIGHT][CHARACTERPATTERN_MAX_WIDTH];
-        static const unsigned char s_ControlPatternGrids[ImageAttributes::InterfaceSizeCount][CHARACTERPATTERN_CONTROL_COUNT][CHARACTERPATTERN_CONTROL_MAX_HEIGHT][CHARACTERPATTERN_CONTROL_MAX_WIDTH];
-
-        void FindPatternMatches(const unsigned char* patternGrids, const CharacterGrid& charGrid, unsigned int patternCount, int xOffset = 0);
-        void FindBestMatchingPattern(unsigned int patternCount, int xOffset = -CHARACTERPATTERN_X_OFFSET);
-        int FindBestOverallMatchingPattern(unsigned int matchCount, int* bestI = NULL);
-        void ResetBestMatchingPatterns();
-
     public:
         enum ControlType
         {
@@ -55,6 +36,25 @@ namespace GW2
         QString ConvertCharGridToCharacter(const CharacterGrid& charGrid, const ImageAttributes& imageAttributes, int offsetAdd = 0);
         ControlType ConvertCharGridToImageAttributes(ImageAttributes& imageAttributes, const CharacterGrid& charGrid);
         ControlType ConvertCharGridToScrollBarControlType(const CharacterGrid& charGrid, const ImageAttributes& imageAttributes);
+
+    private:
+        void FindPatternMatches(const unsigned char* patternGrids, const CharacterGrid& charGrid, unsigned int patternCount, int xOffset = 0);
+        void FindBestMatchingPattern(unsigned int patternCount, int xOffset = -CHARACTERPATTERN_X_OFFSET);
+        int FindBestOverallMatchingPattern(unsigned int matchCount, int* bestI = NULL);
+        void ResetBestMatchingPatterns();
+
+        int m_PatternMatches[CHARACTERPATTERN_COUNT];
+        int m_BestMatchingIndices[ImageAttributes::InterfaceSizeCount];
+        int m_BestMatchingPatternCounts[ImageAttributes::InterfaceSizeCount];
+        int m_BestMatchingPatterns[ImageAttributes::InterfaceSizeCount];
+        int m_CurrentWidth;
+        int m_CurrentHeight;
+        int m_CurrentPositiveWeight;
+        int m_CurrentNegativeWeight;
+
+        static const QString s_Pattern;
+        static const unsigned char s_PatternGrids[ImageAttributes::InterfaceSizeCount][ImageAttributes::ChatTextSizeCount][CHARACTERPATTERN_COUNT][CHARACTERPATTERN_MAX_HEIGHT][CHARACTERPATTERN_MAX_WIDTH];
+        static const unsigned char s_ControlPatternGrids[ImageAttributes::InterfaceSizeCount][CHARACTERPATTERN_CONTROL_COUNT][CHARACTERPATTERN_CONTROL_MAX_HEIGHT][CHARACTERPATTERN_CONTROL_MAX_WIDTH];
     };
 }
 

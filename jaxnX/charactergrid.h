@@ -27,6 +27,26 @@ namespace GW2
 
     class CharacterGrid
     {
+    public:
+        CharacterGrid();
+        ~CharacterGrid();
+
+        void SetLowerRgbLimit(int lowerRgbLimit);
+        void FindCharacter(const QImage& image, int startX, int startY, const ImageAttributes& imageAttributes);
+        void FindNumber(const QImage& image, int startX, int startY, const ImageAttributes& imageAttributes);
+        inline int GetUsedWidth() const;
+        inline int GetUsedHeight() const;
+        inline int GetXOffset() const;
+        inline int GetYOffset() const;
+        bool IsPartOfCharacter(QRgb rgb);
+        bool IsPartOfNumber(QRgb rgb);
+
+        static bool IsDeviationTooLarge(const QImage& image, QRgb rgb, int x, int y);
+
+#ifdef CHARACTERGRID_DEBUG
+        QImage& GetImage() { return m_Image; }
+#endif // CHARACTERGRID_DEBUG
+
     private:
         enum State
         {
@@ -34,6 +54,11 @@ namespace GW2
             Closed = 0x1,
             Valid = 0x2
         };
+
+        void AddPos(const QImage& image, int x, int y, int index);
+        void ResortData();
+        void FindSymbol(const QImage& image, int startX, int startY, const ImageAttributes& imageAttributes);
+        bool IsValidPartOfSymbol(const QImage& image, int x, int y);
 
         QVector<unsigned char> m_Data;
         QVector<QPoint> m_OpenList;
@@ -51,36 +76,32 @@ namespace GW2
         int m_LowerRgbLimit;
         IsParfOfFuncPtr m_FuncPtr;
 
-        void AddPos(const QImage& image, int x, int y, int index);
-        void ResortData();
-        void FindSymbol(const QImage& image, int startX, int startY, const ImageAttributes& imageAttributes);
-        bool IsValidPartOfSymbol(const QImage& image, int x, int y);
-
         friend class CharacterPattern;
 
 #ifdef CHARACTERGRID_DEBUG
         QImage m_Image;
 #endif // CHARACTERGRID_DEBUG
-
-    public:
-        CharacterGrid();
-        ~CharacterGrid();
-
-        void SetLowerRgbLimit(int lowerRgbLimit);
-        void FindCharacter(const QImage& image, int startX, int startY, const ImageAttributes& imageAttributes);
-        void FindNumber(const QImage& image, int startX, int startY, const ImageAttributes& imageAttributes);
-        int GetUsedWidth() const;
-        int GetUsedHeight() const;
-        int GetXOffset() const;
-        int GetYOffset() const;
-        bool IsPartOfCharacter(QRgb rgb);
-        bool IsPartOfNumber(QRgb rgb);
-        static bool IsDeviationTooLarge(const QImage& image, QRgb rgb, int x, int y);
-
-#ifdef CHARACTERGRID_DEBUG
-        QImage& GetImage() { return m_Image; }
-#endif // CHARACTERGRID_DEBUG
     };
+
+    inline int CharacterGrid::GetUsedWidth() const
+    {
+        return m_UsedWidth;
+    }
+
+    inline int CharacterGrid::GetUsedHeight() const
+    {
+        return m_UsedHeight;
+    }
+
+    inline int CharacterGrid::GetXOffset() const
+    {
+        return m_XOffset;
+    }
+
+    inline int CharacterGrid::GetYOffset() const
+    {
+        return m_YOffset;
+    }
 }
 
 
