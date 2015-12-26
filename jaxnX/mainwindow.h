@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#define MAINWINDOW_WEBSITE_URL "http://www.gw2dmg-meter.de/howto.html"
+#define MAINWINDOW_WEBSITE_URL "http://gw2dmg-meter.de/howto/index.html"
 
 #include <QMainWindow>
 #include <QThread>
