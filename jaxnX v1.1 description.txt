@@ -1,8 +1,0 @@
-~Reordered function declarations and functions definitions
-~Renamed Opacity.png to Transparency.png
-~Dps is now based on the time (was based on events earlier, so when the event was thrown too late => precision loss)
-+Time label showing the time in combat
-+Settings used to save the window states
-+Configurator used for the configuration
-+Configurator icon
--Screenrecorderthread (QThread is now used the way it should be used, as stated in the Qt doc, see mainwindow.h and mainwindow.cpp)
